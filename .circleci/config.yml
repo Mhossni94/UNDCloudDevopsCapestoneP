@@ -97,12 +97,12 @@ jobs:
       - restore_cache:
           keys: [frontend-build]
       - run:
-        name : Frontend security analysis
-        command : |
-          cd frontend
-          npm audit --audit-level=critical
+          name : Frontend security analysis
+          command : |
+            cd frontend
+            npm audit --audit-level=critical
 
-    scan-backend:
+  scan-backend:
     docker:
       - image : circleci:node:13.8.0
     steps:
@@ -110,10 +110,10 @@ jobs:
       - restore_cache:
           keys: [backend-build]
       - run:
-        name : Backend security analysis
-        command : |
-          cd backend
-          npm audit --audit-level=critical
+          name : Backend security analysis
+          command : |
+            cd backend
+            npm audit --audit-level=critical
 workflows:
   default:
     jobs:
