@@ -1,5 +1,9 @@
 version: 2.1
 
+orbs: 
+
+  slack: circleci/slack@4.1
+
 commands:
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
@@ -47,6 +51,13 @@ jobs:
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build
+      - slack/notify:
+          event: fail
+          mentions: '@CircleCi_UND_Uda_MHossni'
+          template: build-frontend_fail_${CIRCLE_BUILD_NUM}
+      - slack/notify:
+          event: pass
+          template: build-frontend_success_${CIRCLE_BUILD_NUM}
 
   build-backend:
     docker:
@@ -62,7 +73,14 @@ jobs:
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
-
+      - slack/notify:
+          event: fail
+          mentions: '@CircleCi_UND_Uda_MHossni'
+          template: build-backend_fail_${CIRCLE_BUILD_NUM}
+      - slack/notify:
+          event: pass
+          template: build-backend_success_${CIRCLE_BUILD_NUM}
+  
   test-frontend:
     docker:
       - image: circleci/node:13.8.0
@@ -75,7 +93,14 @@ jobs:
           command: |
             cd frontend
             npm run test
-                
+      - slack/notify:
+          event: fail
+          mentions: '@CircleCi_UND_Uda_MHossni'
+          template: test-frontend_fail_${CIRCLE_BUILD_NUM}
+      - slack/notify:
+          event: pass
+          template: test-frontend_success_${CIRCLE_BUILD_NUM}
+
   test-backend:
     docker:
       - image: circleci/node:13.8.0
@@ -88,6 +113,13 @@ jobs:
           command: |
             cd backend
             npm run test
+      - slack/notify:
+          event: fail
+          mentions: '@CircleCi_UND_Uda_MHossni'
+          template: test-backend_fail_${CIRCLE_BUILD_NUM}
+      - slack/notify:
+          event: pass
+          template: test-backend_success_${CIRCLE_BUILD_NUM}
 
   scan-frontend:
     docker:
@@ -101,6 +133,13 @@ jobs:
           command : |
             cd frontend
             npm audit --audit-level=critical
+      - slack/notify:
+          event: fail
+          mentions: '@CircleCi_UND_Uda_MHossni'
+          template: scan-frontend_fail_${CIRCLE_BUILD_NUM}
+      - slack/notify:
+          event: pass
+          template: scan-frontend_success_${CIRCLE_BUILD_NUM}
 
   scan-backend:
     docker:
@@ -114,6 +153,13 @@ jobs:
           command : |
             cd backend
             npm audit --audit-level=critical
+      - slack/notify:
+          event: fail
+          mentions: '@CircleCi_UND_Uda_MHossni'
+          template: scan-backend_fail_${CIRCLE_BUILD_NUM}
+      - slack/notify:
+          event: pass
+          template: scan-backend${CIRCLE_BUILD_NUM}
 workflows:
   default:
     jobs:
