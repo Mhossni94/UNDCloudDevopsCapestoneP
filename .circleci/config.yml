@@ -116,10 +116,10 @@ jobs:
       - slack/notify:
           event: fail
           mentions: '@general'
-          template: test-backend_fail_${CIRCLE_BUILD_NUM}
+          template: basic_fail_1
       - slack/notify:
           event: pass
-          template: test-backend_success_${CIRCLE_BUILD_NUM}
+          template: basic_success_1
 
   scan-frontend:
     docker:
@@ -132,6 +132,7 @@ jobs:
           name : Frontend security analysis
           command : |
             cd frontend
+            npm audit fix --audit-level=critical --force
             npm audit --audit-level=critical
       - slack/notify:
           event: fail
@@ -152,6 +153,7 @@ jobs:
           name : Backend security analysis
           command : |
             cd backend
+            npm audit fix --audit-level=critical --force
             npm audit --audit-level=critical
       - slack/notify:
           event: fail
