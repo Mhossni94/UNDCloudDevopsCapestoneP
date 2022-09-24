@@ -193,19 +193,22 @@ jobs:
                 --tags project=udapeople \
                 --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
                 --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
-        
         - run:
             name: Add back-end ip to ansible inventory
             command: |
               aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text >> ~/project/.circleci/ansible/inventory.txt
-        - persist_to_workspace:
-            root: ~/
-            paths:
-              - project/.circleci/ansible/inventory.txt
+        - run:
+            name: Install tar utility to fix persist_to_workspace issue
+            command: |
+              yum install -y tar gzip
         - run:
             name: log back-end public ip
             command: |
               cat ~/project/.circleci/ansible/inventory.txt
+        - persist_to_workspace:
+            root: ~/
+            paths:
+              - project/.circleci/ansible/inventory.txt
         - destroy-environment 
 
   # configure-infrastructure:
@@ -214,8 +217,9 @@ jobs:
   #   steps:
   #     - checkout
   #     - add_ssh_keys:
-  #         fingerprints: ["0c:55:f7:d7:ad:e3:73:19:0b:e6:c6:46:5c:04:76:94"]
-  #     # attach workspace
+  #         fingerprints: ["83:d3:fd:5b:5a:56:60:5f:0d:52:ef:77:17:7d:f4:54"]
+  #     - attach_workspace:
+  #         at: ~/
   #     - run:
   #         name: Install dependencies
   #         command: |
@@ -226,7 +230,7 @@ jobs:
   #         command: |
   #           # Your code here
   #           exit 1
-  #     # Here's where you will add some code to rollback on failure      
+      # Here's where you will add some code to rollback on failure      
 workflows:
   default:
     jobs:
