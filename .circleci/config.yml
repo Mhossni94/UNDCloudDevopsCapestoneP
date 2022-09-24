@@ -54,10 +54,10 @@ jobs:
       - slack/notify:
           event: fail
           mentions: '@CircleCi_UND_Uda_MHossni'
-          template: build-frontend_fail_${CIRCLE_BUILD_NUM}
+          template: basic_fail_1
       - slack/notify:
           event: pass
-          template: build-frontend_success_${CIRCLE_BUILD_NUM}
+          template: basic_success_1
 
   build-backend:
     docker:
@@ -76,10 +76,10 @@ jobs:
       - slack/notify:
           event: fail
           mentions: '@CircleCi_UND_Uda_MHossni'
-          template: build-backend_fail_${CIRCLE_BUILD_NUM}
+          template: basic_fail_1
       - slack/notify:
           event: pass
-          template: build-backend_success_${CIRCLE_BUILD_NUM}
+          template: basic_success_1
   
   test-frontend:
     docker:
@@ -96,10 +96,10 @@ jobs:
       - slack/notify:
           event: fail
           mentions: '@CircleCi_UND_Uda_MHossni'
-          template: test-frontend_fail_${CIRCLE_BUILD_NUM}
+          template: basic_fail_1
       - slack/notify:
           event: pass
-          template: test-frontend_success_${CIRCLE_BUILD_NUM}
+          template: basic_success_1
 
   test-backend:
     docker:
@@ -136,10 +136,10 @@ jobs:
       - slack/notify:
           event: fail
           mentions: '@CircleCi_UND_Uda_MHossni'
-          template: scan-frontend_fail_${CIRCLE_BUILD_NUM}
+          template: basic_fail_1
       - slack/notify:
           event: pass
-          template: scan-frontend_success_${CIRCLE_BUILD_NUM}
+          template: basic_success_1
 
   scan-backend:
     docker:
@@ -156,10 +156,10 @@ jobs:
       - slack/notify:
           event: fail
           mentions: '@CircleCi_UND_Uda_MHossni'
-          template: scan-backend_fail_${CIRCLE_BUILD_NUM}
+          template: basic_fail_1
       - slack/notify:
           event: pass
-          template: scan-backend${CIRCLE_BUILD_NUM}
+          template: basic_success_1
 workflows:
   default:
     jobs:
