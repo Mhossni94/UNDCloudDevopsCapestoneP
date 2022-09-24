@@ -53,7 +53,7 @@ jobs:
           key: frontend-build
       - slack/notify:
           event: fail
-          mentions: '@CircleCi_UND_Uda_MHossni'
+          mentions: '@general'
           template: basic_fail_1
       - slack/notify:
           event: pass
@@ -75,7 +75,7 @@ jobs:
           key: backend-build
       - slack/notify:
           event: fail
-          mentions: '@CircleCi_UND_Uda_MHossni'
+          mentions: '@general'
           template: basic_fail_1
       - slack/notify:
           event: pass
@@ -95,7 +95,7 @@ jobs:
             npm run test
       - slack/notify:
           event: fail
-          mentions: '@CircleCi_UND_Uda_MHossni'
+          mentions: '@general'
           template: basic_fail_1
       - slack/notify:
           event: pass
@@ -115,7 +115,7 @@ jobs:
             npm run test
       - slack/notify:
           event: fail
-          mentions: '@CircleCi_UND_Uda_MHossni'
+          mentions: '@general'
           template: test-backend_fail_${CIRCLE_BUILD_NUM}
       - slack/notify:
           event: pass
@@ -135,7 +135,7 @@ jobs:
             npm audit --audit-level=critical
       - slack/notify:
           event: fail
-          mentions: '@CircleCi_UND_Uda_MHossni'
+          mentions: '@general'
           template: basic_fail_1
       - slack/notify:
           event: pass
@@ -155,7 +155,7 @@ jobs:
             npm audit --audit-level=critical
       - slack/notify:
           event: fail
-          mentions: '@CircleCi_UND_Uda_MHossni'
+          mentions: '@general'
           template: basic_fail_1
       - slack/notify:
           event: pass
