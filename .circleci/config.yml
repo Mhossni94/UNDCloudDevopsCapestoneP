@@ -213,17 +213,13 @@ jobs:
 
   configure-infrastructure:
     docker:
-      - image : python:3.7-alpine3.11
+      - image : circleci/python:latest
     steps:
       - checkout
       - add_ssh_keys:
           fingerprints: ["83:d3:fd:5b:5a:56:60:5f:0d:52:ef:77:17:7d:f4:54"]
       - attach_workspace:
           at: ~/
-      - run:
-          name: Install dependencies
-          command: |
-            apk add --update tar gzip ansible
       - run:
           name: Install AWS CLI
           command: |
