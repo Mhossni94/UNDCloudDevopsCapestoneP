@@ -18,18 +18,18 @@
         sleep 600
 
     - name: "update packages"
-    become: yes
-    apt:
+      become: yes
+      apt:
       update_cache: yes
 
     - name: "upgrade packages"
-      become: yes
-      apt:
+        become: yes
+        apt:
         upgrade: yes
 
         - name: "install python, node & npm for Ansible."
-        become: yes
-        apt:
+          become: yes
+          apt:
           name: ["python","nodejs","npm"]
           state: latest
           update_cache: yes
