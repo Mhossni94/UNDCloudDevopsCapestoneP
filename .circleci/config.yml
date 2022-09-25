@@ -162,9 +162,8 @@ jobs:
           name : Backend security analysis
           command : |
             cd backend
-            npm install
-            npm audit fix --force --audit-level=critical
-            npm audit fix --force --audit-level=critical
+            npm audit fix --audit-level=critical --force
+            npm audit fix --audit-level=critical --force
             npm audit fix --force --audit-level=critical
             npm audit fix --force --audit-level=critical
             npm audit fix --force --audit-level=critical
@@ -242,7 +241,7 @@ jobs:
       - run: 
           name: Install Ansible
           command: |
-             python3 -m pip install --user ansible
+             apk add --update ansible
       - run:
           name: Configure server
           command: |
