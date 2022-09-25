@@ -218,26 +218,31 @@ jobs:
 
   configure-infrastructure:
     docker:
-      - image : circleci/python:latest
+      - image : python:3.7-alpine3.11
     steps:
       - checkout
       - add_ssh_keys:
           fingerprints: ["83:d3:fd:5b:5a:56:60:5f:0d:52:ef:77:17:7d:f4:54"]
       - attach_workspace:
           at: ~/
+      # - run:
+      #     name: Install AWS CLI
+      #     command: |
+      #       sudo apt upgrade \
+      #       && sudo apt update \
+      #       && sudo apt install unzip \
+      #       && sudo curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
+      #       && sudo unzip awscliv2.zip \
+      #       && sudo ./aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli --update
+
       - run:
           name: Install AWS CLI
           command: |
-            sudo apt upgrade \
-            && sudo apt update \
-            && sudo apt install unzip \
-            && sudo curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
-            && sudo unzip awscliv2.zip \
-            && sudo ./aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli --update
+            pip3 install awscli
       - run: 
           name: Install Ansible
           command: |
-             sudo apt install ansible
+             pip3 install ansible
       - run:
           name: Configure server
           command: |
