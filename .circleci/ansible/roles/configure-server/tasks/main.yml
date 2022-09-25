@@ -12,7 +12,7 @@
     - name: "install python, node & npm for Ansible."
       become: yes
       apt:
-        name: ["python","nodejs","npm","aws"]
+        name: ["python3","nodejs","npm","aws"]
         state: latest
         update_cache: yes
 
