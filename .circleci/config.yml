@@ -28,20 +28,21 @@ commands:
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
     parameters:
-      # Add parameter here     
+      Workflow_ID:
+        type: string
+        default: ${CIRCLE_WORKFLOW_ID:0:7} 
     steps:
       - run:
           name: Revert migrations
-          # Add when this will run
+          when: on_fail
           command: |
             # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
-            SUCCESS = 1
+            SUCCESS = `curl --insecure  https://kvdb.io/GcrTkgswKvZRWyCchJ6zXw/migration_<<parameters.Workflow_ID>>`
             if(( $SUCCESS==1 )); 
             then
-            #  cd ~/project/backend
-            #  npm install
-            #  Add revert code here. You can find this in the Getting Started section.
-              exit 1
+             cd ~/project/backend
+             npm install
+             npm run migration:revert
             fi
             
 jobs:
@@ -253,10 +254,15 @@ jobs:
             && sudo unzip awscliv2.zip \
             && sudo ./aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli --update
       - run:
+          name: Node version
+          command: |
+            node -v
+            && npm -v
+      - run:
           name: Run migrations
           command: |
             cd backend
-            npm run migrations > migrations_dump.txt
+            npm run migrations 
       - run:
           name: Send migration results to kvdb
           command: |
@@ -265,6 +271,7 @@ jobs:
                 curl https://kvdb.io/GcrTkgswKvZRWyCchJ6zXw/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
             fi
       - destroy-environment
+      - revert-migrations
 
   deploy-frontend:
     docker:
