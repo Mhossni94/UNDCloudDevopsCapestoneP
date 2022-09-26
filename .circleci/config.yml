@@ -262,7 +262,7 @@ jobs:
           name: Run migrations
           command: |
             cd backend
-            npm run migrations 
+            npm run migrations
       - run:
           name: Send migration results to kvdb
           command: |
