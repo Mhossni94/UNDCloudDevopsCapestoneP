@@ -8,12 +8,13 @@
   apt:
     upgrade: yes
 
-- name: "install python, node & npm for Ansible."
+- name: "install node & npm ."
   become: yes
   apt:
-    name: ["python3","nodejs","npm","aws"]
+    name: ["nodejs","npm"]
     state: latest
     update_cache: yes
+
 - name: "install pm2"
   become: yes
   npm:
