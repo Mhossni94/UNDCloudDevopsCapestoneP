@@ -238,24 +238,11 @@ jobs:
           name: Install AWS CLI
           command: |
             pip3 install awscli
-      - run: 
-          name: Configure SSH in known_hosts
-          command: |
-            if [ -z "$(ssh-keygen -F $IP)" ]; then
-            ssh-keyscan -H $IP >> ~/.ssh/known_hosts
-            fi
       - run:
           name: Configure server
           command: |
             cd .circleci/ansible
             ansible-playbook -i inventory.txt configure-server.yml
-      - slack/notify:
-          event: fail
-          mentions: '@general'
-          template: basic_fail_1
-      - slack/notify:
-          event: pass
-          template: basic_success_1
       - destroy-environment 
 
   run-migrations:
@@ -292,6 +279,7 @@ jobs:
             sudo apt upgrade \
             && sudo apt update \
             && sudo apt install npm
+            && sudo apt curl
             && sudo tar
       - run:
           name: Get backend url
