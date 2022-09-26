@@ -254,10 +254,6 @@ jobs:
             && sudo unzip awscliv2.zip \
             && sudo ./aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli --update
       - run:
-          name: Node version
-          command: |
-            npm -v
-      - run:
           name: Run migrations
           command: |
             cd backend
