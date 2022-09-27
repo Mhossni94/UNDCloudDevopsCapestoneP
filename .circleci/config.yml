@@ -36,9 +36,8 @@ commands:
           name: Revert migrations
           when: on_fail
           command: |
-            # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
-            SUCCESS = $(curl --insecure  https://kvdb.io/GcrTkgswKvZRWyCchJ6zXw/migration_<<parameters.Workflow_ID>>)
-            if(( $SUCCESS==1 )); 
+            export SUCCESS = $(curl --insecure  https://kvdb.io/GcrTkgswKvZRWyCchJ6zXw/migration_<<parameters.Workflow_ID>>)
+            if [[ $"SUCCESS" -eq "1" ]]; 
             then
              cd ~/project/backend
              npm install
@@ -281,8 +280,8 @@ jobs:
           command: |
             sudo apt upgrade \
             && sudo apt update \
-            && sudo apt install npm
-            && sudo apt curl
+            && sudo apt install npm \
+            && sudo apt curl \
             && sudo tar
       - run:
           name: Get backend url
@@ -334,7 +333,7 @@ jobs:
           name: Deploy backend
           command: |
             tar -C backend -czvf artifact.tar.gz .
-            cp artifact.tar.gz .circleci/ansible/roles/deploy/files/artifact.tar.gz
+            cp artifact.tar.gz ../.circleci/ansible/roles/deploy/files/artifact.tar.gz
             cd .circleci/ansible
             echo "Contents  of the inventory.txt file is -------"
             cat inventory.txt
