@@ -287,10 +287,6 @@ jobs:
             && sudo unzip awscliv2.zip \
             && sudo ./aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli --update
       - run:
-          name: Install dependencies
-          command: |
-            yum install -y tar curl npm
-      - run:
           name: Get backend url
           command: |
             export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
