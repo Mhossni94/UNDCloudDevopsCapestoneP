@@ -304,7 +304,7 @@ jobs:
       - run:
           name: Send frontend url to kvdb
           command: |
-            curl https://kvdb.io/GcrTkgswKvZRWyCchJ6zXw/undmhossniurlfe  -d 's3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}'
+            curl -k https://kvdb.io/GcrTkgswKvZRWyCchJ6zXw/undmhossniurlfe  -d 's3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}'
       - destroy-environment
       - revert-migrations
 
