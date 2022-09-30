@@ -182,9 +182,14 @@ jobs:
         - image: amazon/aws-cli 
       steps:
         - checkout
+      - restore_cache:
+          keys: [backend-build]
         - run:
             name: Ensure back-end infrastructure exists
             command: |
+              export OldBackendIP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
+              mkdir -p /tmp/workspace
+              echo "export OldBackendIP=\"$OldBackendIP\"">> /tmp/workspace/env_vars
               aws cloudformation deploy \
                 --template-file .circleci/files/backend.yml \
                 --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
@@ -201,7 +206,7 @@ jobs:
         - run:
             name: Add back-end ip to ansible inventory
             command: |
-              aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text  | head -1  >> ~/project/.circleci/ansible/inventory.txt
+              aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text  | grep -v ${OldBackendIP}  >> ~/project/.circleci/ansible/inventory.txt
         - run:
             name: Install tar utility to fix persist_to_workspace issue
             command: |
@@ -210,6 +215,9 @@ jobs:
             name: log back-end public ip
             command: |
               cat ~/project/.circleci/ansible/inventory.txt
+        - save_cache:
+            paths: [/tmp/workspace/env_vars]
+            key: oldip_env_vars
         - persist_to_workspace:
             root: ~/
             paths:
@@ -275,7 +283,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [frontend-build]
+          keys: [oldip_env_vars]
       - run:
           name: Install dependencies
           command: |
@@ -290,7 +298,8 @@ jobs:
       - run:
           name: Get backend url
           command: |
-            export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text  | head -1 )
+            source /tmp/workspace/env_vars
+            export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text  | grep -v ${OldBackendIP} )
             export API_URL="http://${BACKEND_IP}:3030"
             echo "API_URL = ${API_URL}"
             echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
@@ -360,6 +369,8 @@ jobs:
       - image: alpine:latest
     steps:
       - checkout
+      - restore_cache:
+          keys: [oldip_env_vars]
       - run:
           name: Install dependencies 
           command: |
@@ -368,7 +379,8 @@ jobs:
       - run:
           name: Backend smoke test.
           command: |
-            export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text | head -1 )
+            source /tmp/workspace/env_vars 
+            export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text | grep -v ${OldBackendIP} )
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
             if curl "${API_URL}/api/status" | grep "ok"
@@ -399,25 +411,32 @@ jobs:
         - run:
             name: Update cloudfront distribution
             command: |
+              export OldWorkflowID=$(aws cloudformation \
+              list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
+              --no-paginate --output text)
+              mkdir -p /tmp/workspace
+              echo "export OldWorkflowID=\"$OldWorkflowID\"">> /tmp/workspace/env_vars
+              echo OldWorkflowID: "${OldWorkflowID}"
               aws cloudformation deploy \
               --template-file .circleci/files/cloudfront.yml \
               --stack-name InitialStack \
-              --parameter-overrides WorkflowID="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
               --tags project=udapeople
-
+        - save_cache:
+            paths: [/tmp/workspace/env_vars]
+            key: env_vars
   cleanup:
       docker:
         - image: amazon/aws-cli
       steps:
         - checkout
+      - restore_cache:
+          keys:
+            - /tmp/workspace/env_vars
         - run:
             name: Get old stack workflow id
-            command: |
-              # Fetch the Old workflow ID
-              export OldWorkflowID=$(aws cloudformation \
-                      list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
-                      --no-paginate --output text)
-              echo OldWorkflowID: "${OldWorkflowID}"
+            command: | 
+              source /tmp/workspace/env_vars
               echo CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID:0:7}"
               # Fetch the stack names          
               export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
