@@ -8,7 +8,7 @@
     src: artifact.tar.gz
     dest: ~/udapeople/artifact.tar.gz
     owner: ubuntu
-    group: ubuntu
+    group: ubuntu 
     mode: '0744'
 
 - name: Extract Artifact
