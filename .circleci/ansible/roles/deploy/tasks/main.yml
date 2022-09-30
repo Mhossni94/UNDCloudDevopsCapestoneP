@@ -1,18 +1,24 @@
+- name: Creating application directory
+  file:
+    path: ~/udapeople
+    state: directory
+
 - name: Copy file with owner and permissions
   copy:
     src: artifact.tar.gz
-    dest: ~/artifact.tar.gz
+    dest: ~/udapeople/artifact.tar.gz
     owner: ubuntu
     group: ubuntu
     mode: '0744'
 
 - name: Extract Artifact
   shell: | 
-    tar -xf artifact.tar.gz
+    cd ~/udapeople/
+    tar -xvf artifact.tar.gz
 
 - name: Install dependencies & start PM2 
   shell: |
-    cd ~/artifact
+    cd ~/udapeople/
     npm install
     pm2 stop default
-    pm2 start npm -- start
+    pm2 start main.js
