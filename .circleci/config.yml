@@ -331,13 +331,15 @@ jobs:
             && sudo unzip awscliv2.zip \
             && sudo ./aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli --update
       - run: 
-          name: Install Ansible
+          name: Install dependencies
           command: |
              sudo apt install ansible
+             sudo apt install npm
       - run:
           name: Deploy backend
           command: |
             cd backend 
+            npm install
             npm run build
             cd ..
             tar -C backend -czvf artifact.tar.gz .
