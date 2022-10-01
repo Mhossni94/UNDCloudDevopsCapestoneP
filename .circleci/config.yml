@@ -417,6 +417,7 @@ jobs:
               --no-paginate --output text)
               mkdir -p /tmp/workspace
               echo "export OldWorkflowID=\"$OldWorkflowID\"">> /tmp/workspace/env_vars
+              curl -k https://kvdb.io/GcrTkgswKvZRWyCchJ6zXw/oldworkflow -d ${OldWorkflowID}
               echo OldWorkflowID: "${OldWorkflowID}"
               aws cloudformation deploy \
               --template-file .circleci/files/cloudfront.yml \
@@ -442,7 +443,7 @@ jobs:
             name: Get old stack workflow id
             command: | 
               source /tmp/workspace/env_vars
-              cat /tmp/workspace/env_vars
+              OldWorkflowID=$(curl --insecure  https://kvdb.io/GcrTkgswKvZRWyCchJ6zXw/oldworkflow)
               echo "old :"
               echo ${OldWorkflowID}
               echo CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID:0:7}"
