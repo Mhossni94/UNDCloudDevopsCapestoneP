@@ -440,8 +440,8 @@ jobs:
             keys:
               - env_vars
         - run:
-            name: Get old stack workflow id
-            command: | 
+            name: Remove old stacks and files
+            command: |
               source /tmp/workspace/env_vars
               OldWorkflowID=$(curl --insecure  https://kvdb.io/GcrTkgswKvZRWyCchJ6zXw/oldworkflow)
               echo "old :"
@@ -450,10 +450,7 @@ jobs:
               # Fetch the stack names          
               export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
                       --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
-              echo Stack names: "${STACKS[@]}"    
-        - run:
-            name: Remove old stacks and files
-            command: |
+              echo Stack names: "${STACKS[@]}"   
               echo ${OldWorkflowID}
               if [[ "${OldWorkflowID}" =~ "${STACKS[@]}" ]]
               then
