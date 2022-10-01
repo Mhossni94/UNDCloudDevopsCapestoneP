@@ -182,8 +182,8 @@ jobs:
         - image: amazon/aws-cli 
       steps:
         - checkout
-      - restore_cache:
-          keys: [backend-build]
+        - restore_cache:
+            keys: [backend-build]
         - run:
             name: Ensure back-end infrastructure exists
             command: |
@@ -430,9 +430,9 @@ jobs:
         - image: amazon/aws-cli
       steps:
         - checkout
-      - restore_cache:
-          keys:
-            - /tmp/workspace/env_vars
+        - restore_cache:
+            keys:
+              - /tmp/workspace/env_vars
         - run:
             name: Get old stack workflow id
             command: | 
