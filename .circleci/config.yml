@@ -432,9 +432,9 @@ jobs:
       steps:
         - checkout
         - run:
-          name: install pre requesisets 
-          command: |
-            yum install -y tar gzip
+            name: install pre requesisets 
+            command: |
+              yum install -y tar gzip
         - restore_cache:
             keys:
               - env_vars
