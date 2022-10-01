@@ -206,7 +206,7 @@ jobs:
         - run:
             name: Add back-end ip to ansible inventory
             command: |
-              aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text  | grep -v ${OldBackendIP}  >> ~/project/.circleci/ansible/inventory.txt
+              aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text  | head -1  >> ~/project/.circleci/ansible/inventory.txt
         - run:
             name: Install tar utility to fix persist_to_workspace issue
             command: |
@@ -299,7 +299,7 @@ jobs:
           name: Get backend url
           command: |
             source /tmp/workspace/env_vars
-            export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text  | grep -v ${OldBackendIP} )
+            export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text  | head -1 )
             export API_URL="http://${BACKEND_IP}:3030"
             echo "API_URL = ${API_URL}"
             echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
@@ -380,7 +380,7 @@ jobs:
           name: Backend smoke test.
           command: |
             source /tmp/workspace/env_vars 
-            export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text | grep -v ${OldBackendIP} )
+            export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text | head -1 )
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
             if curl "${API_URL}/api/status" | grep "ok"
