@@ -433,7 +433,7 @@ jobs:
         - checkout
         - restore_cache:
             keys:
-              - /tmp/workspace/env_vars
+              - env_vars
         - run:
             name: Get old stack workflow id
             command: | 
