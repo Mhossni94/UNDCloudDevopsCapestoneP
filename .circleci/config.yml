@@ -187,9 +187,6 @@ jobs:
         - run:
             name: Ensure back-end infrastructure exists
             command: |
-              export OldBackendIP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
-              mkdir -p /tmp/workspace
-              echo "export OldBackendIP=\"$OldBackendIP\"">> /tmp/workspace/env_vars
               aws cloudformation deploy \
                 --template-file .circleci/files/backend.yml \
                 --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
@@ -206,8 +203,7 @@ jobs:
         - run:
             name: Add back-end ip to ansible inventory
             command: |
-              source /tmp/workspace/env_vars
-              aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text | grep -v '${OldBackendIP}'  >> ~/project/.circleci/ansible/inventory.txt
+              aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters "Name=tag:Name,Values= backend-${CIRCLE_WORKFLOW_ID:0:7}" --output text  >> ~/project/.circleci/ansible/inventory.txt
         - run:
             name: Install tar utility to fix persist_to_workspace issue
             command: |
@@ -216,9 +212,6 @@ jobs:
             name: log back-end public ip
             command: |
               cat ~/project/.circleci/ansible/inventory.txt
-        - save_cache:
-            paths: [/tmp/workspace/env_vars]
-            key: oldip_env_vars
         - persist_to_workspace:
             root: ~/
             paths:
@@ -283,8 +276,6 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout
-      - restore_cache:
-          keys: [oldip_env_vars]
       - run:
           name: Install dependencies
           command: |
@@ -299,8 +290,7 @@ jobs:
       - run:
           name: Get backend url
           command: |
-            source /tmp/workspace/env_vars
-            export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text  | grep -v '${OldBackendIP}'  )
+            export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters "Name=tag:Name,Values= backend-${CIRCLE_WORKFLOW_ID:0:7}" --output text   )
             export API_URL="http://${BACKEND_IP}:3030"
             echo "API_URL = ${API_URL}"
             echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
@@ -371,8 +361,6 @@ jobs:
       - image: alpine:latest
     steps:
       - checkout
-      - restore_cache:
-          keys: [oldip_env_vars]
       - run:
           name: Install dependencies 
           command: |
@@ -381,8 +369,7 @@ jobs:
       - run:
           name: Backend smoke test.
           command: |
-            source /tmp/workspace/env_vars 
-            export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text | grep -v '${OldBackendIP}')
+            export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters "Name=tag:Name,Values= backend-${CIRCLE_WORKFLOW_ID:0:7}" --output text )
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
             if curl "${API_URL}/api/status" | grep "ok"
