@@ -206,6 +206,7 @@ jobs:
         - run:
             name: Add back-end ip to ansible inventory
             command: |
+              source /tmp/workspace/env_vars
               aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text  | grep -v ${OldBackendIP}  >> ~/project/.circleci/ansible/inventory.txt
         - run:
             name: Install tar utility to fix persist_to_workspace issue
